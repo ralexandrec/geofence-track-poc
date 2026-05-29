@@ -1,0 +1,168 @@
+openapi: 3.0.3
+info:
+  title: Geo Tracking API
+  version: 1.0.0
+  description: API contract for the GeoFence tracking service prototype.
+servers:
+  - url: http://localhost:3000
+paths:
+  /track:
+    post:
+      summary: Create a new track position and evaluate geofence alert.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTrackDto'
+      responses:
+        '201':
+          description: Created track position with alert status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackResponse'
+    get:
+      summary: Retrieve all stored track positions.
+      responses:
+        '200':
+          description: List of track entries.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Track'
+  /track/{id}:
+    get:
+      summary: Retrieve a track position by ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Track entry or null when not found.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/Track'
+                  - type: 'null'
+    patch:
+      summary: Update a stored track position and recalculate alert status.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTrackDto'
+      responses:
+        '200':
+          description: Updated track entry or null when not found.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/Track'
+                  - type: 'null'
+    delete:
+      summary: Remove a track position by ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Deleted track entry or null when not found.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/Track'
+                  - type: 'null'
+components:
+  schemas:
+    CreateTrackDto:
+      type: object
+      required:
+        - deviceId
+        - latitude
+        - longitude
+        - timestamp
+      properties:
+        deviceId:
+          type: string
+          example: vehicle-1
+        latitude:
+          type: number
+          format: float
+          example: -23.55052
+        longitude:
+          type: number
+          format: float
+          example: -46.633308
+        timestamp:
+          type: string
+          format: date-time
+          example: '2026-05-28T12:00:00Z'
+    UpdateTrackDto:
+      type: object
+      properties:
+        deviceId:
+          type: string
+          example: vehicle-2
+        latitude:
+          type: number
+          format: float
+          example: -23.54052
+        longitude:
+          type: number
+          format: float
+          example: -46.623308
+        timestamp:
+          type: string
+          format: date-time
+          example: '2026-05-28T12:30:00Z'
+    Track:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        deviceId:
+          type: string
+          example: vehicle-1
+        latitude:
+          type: number
+          format: float
+          example: -23.55052
+        longitude:
+          type: number
+          format: float
+          example: -46.633308
+        timestamp:
+          type: string
+          format: date-time
+          example: '2026-05-28T12:00:00Z'
+        alert:
+          type: boolean
+          example: true
+    TrackResponse:
+      allOf:
+        - $ref: '#/components/schemas/Track'
+        - type: object
+          properties:
+            message:
+              type: string
+              example: Geofence alert triggered

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/renatosoft-logo.png" alt="RenatoSoft Company Ltda logo"/>
+  <img src="docs/renatosoft-logo.png" alt="RenatoSoft Company Ltda logo" width="360" />
 </p>
 
 # RenatoSoft Geofence Track POC
